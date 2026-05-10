@@ -1,0 +1,29 @@
+# Caches & artifacts
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+.coverage
+htmlcov/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Repo metadata
+.git/
+.gitignore
+
+# Logs / output
+*.log
+outputs/
+
+# Pre-computed caches that should be regenerated inside the container
+**/aoa_cache/
+**/calibration_cache.npz
+**/bit_channel.npz

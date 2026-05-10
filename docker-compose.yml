@@ -1,0 +1,23 @@
+services:
+  phy-demo:
+    build: .
+    image: robust6g/wp6-phy:0.1.0
+    container_name: robust6g-wp6-phy
+    ports:
+      - "8000:8000"
+    environment:
+      LOG_LEVEL: INFO
+      # Override these if you want to mount your own dataset/skg package
+      # rather than using the ones baked into the image:
+      # ROBUST6G_DATASET: /data/data_ULA_skg.npz
+      # ROBUST6G_SKG_PKG: /opt/skg_robust6G
+    # volumes:
+    #   - ./dataset:/data:ro
+    #   - ./skg_robust6G:/opt/skg_robust6G:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s

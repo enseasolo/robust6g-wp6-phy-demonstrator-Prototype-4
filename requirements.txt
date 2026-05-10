@@ -1,0 +1,21 @@
+# --- API stack ---
+fastapi>=0.110,<0.120
+uvicorn[standard]>=0.27,<0.40
+pydantic>=2.5,<3
+
+# --- Numeric / signal processing (used by the engines) ---
+numpy>=1.24,<2.2
+scipy>=1.11,<2
+
+# --- Crypto (Davies-Meyer / AES-128) ---
+pycryptodome>=3.19,<4
+
+# --- SKG package & polar code dependencies ---
+# sympy is used by polar_gaussian.py; matplotlib by some skg utilities.
+sympy>=1.12,<2
+matplotlib>=3.7,<4
+
+# --- (Optional) NiceGUI for the legacy interactive demonstrator. The API
+# service does not require it — comment out for a leaner image.
+# nicegui>=2.0,<3
+# plotly>=5.18,<6

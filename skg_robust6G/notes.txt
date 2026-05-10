@@ -1,0 +1,15 @@
+Python packages to install:
+numpy 
+scipy 
+matplotlib 
+sympy 
+galois
+
+
+pip install numpy scipy matplotlib sympy galois
+
+
+First, the reconciliation: main_recon.py
+The reconciled bits are saved in the folder reconciled_bits
+
+Then, generate the secret keys: main_skg.m  (find it in the folder AES_matlab)

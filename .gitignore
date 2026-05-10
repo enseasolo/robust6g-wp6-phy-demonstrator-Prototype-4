@@ -1,0 +1,67 @@
+﻿# ─── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ─── Virtual environments ────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+
+# ─── IDE / OS ────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# ─── Runtime caches (regenerated on first run) ───────────────────────────────
+cache/
+bit_channel.npz
+skg_robust6G/bit_channel.npz
+
+# ─── Logs / build artefacts ──────────────────────────────────────────────────
+*.log
+outputs/
+dist/
+build/
+
+# ─── Project-specific cruft we never want to ship ────────────────────────────
+# Backup/scratch variants of source files
+*- Copy*
+*-lastWorking*
+*-lastworking*
+*-perfect*
+*-bestSoFar*
+*-Great*
+* (1)*
+* (2)*
+*.~py
+*OLD*
+
+# Scratch directories with old experiments
+off/
+offf/
+
+# Duplicate dataset folder — the canonical copies live at the project root
+datasets/
+
+# MATLAB reference (we ship the Python port, not the MATLAB sources)
+*.m
+*.mat
+skg_robust6G/AES_matlab/
+skg_robust6G/reconciled_bits/
+
+# Alternative-architecture Python from an earlier project version
+# (not imported by api_server.py or main.py)
+config.py
+models/aoa_estimator.py
+models/authentication_engine.py
+models/channel_model.py
+models/jamming_detector.py
+models/key_generator.py
+utils/
