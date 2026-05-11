@@ -22,8 +22,8 @@ This repository ships two front-ends to the same underlying engines:
 ## Quick start (Docker)
 
 ```bash
-git clone https://github.com/<org>/robust6g-wp6-phy-demonstrator
-cd robust6g-wp6-phy-demonstrator
+git clone https://github.com/enseasolo/robust6g-wp6-phy-demonstrator-Prototype-4.git
+cd robust6g-wp6-phy-demonstrator-Prototype-4
 docker compose up -d --build
 curl -s http://localhost:8000/api/v1/health | jq .
 ```
@@ -161,4 +161,5 @@ Project deliverable for ROBUST-6G WP6. Final licence to be confirmed.
 
 ## Contact
 
-ROBUST-6G WP6 PHY Demonstrator team — `<fill in>`
+Solomon Yese — ENSEA — <solomon.yese@ensea.fr>
+ROBUST-6G WP6 PHY Demonstrator team

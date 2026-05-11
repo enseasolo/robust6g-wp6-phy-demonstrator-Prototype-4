@@ -113,7 +113,7 @@ dependencies at runtime, no VPN required.
 ### 3.1 Repository
 
 ```
-https://github.com/<org>/robust6g-wp6-phy-demonstrator
+https://github.com/enseasolo/robust6g-wp6-phy-demonstrator-Prototype-4
 ```
 
 (Private repo — partner team invited as collaborators.) The repository
@@ -136,8 +136,8 @@ INTEGRATION.md           # This document
 ### 3.2 Build & run
 
 ```bash
-git clone https://github.com/<org>/robust6g-wp6-phy-demonstrator
-cd robust6g-wp6-phy-demonstrator
+git clone https://github.com/enseasolo/robust6g-wp6-phy-demonstrator-Prototype-4.git
+cd robust6g-wp6-phy-demonstrator-Prototype-4
 docker compose up -d --build
 curl http://localhost:8000/api/v1/health
 ```
@@ -269,4 +269,5 @@ The actuator translates this 1-to-1 to the JSON body of
 
 ## 7. Contact
 
-ROBUST-6G WP6 PHY Demonstrator team — `<fill in>`
+Solomon Yese — ENSEA — <solomon.yese@ensea.fr>
+ROBUST-6G WP6 PHY Demonstrator team
