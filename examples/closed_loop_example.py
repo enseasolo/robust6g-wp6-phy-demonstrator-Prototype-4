@@ -6,24 +6,23 @@ the ROBUST-6G WP6 PHY Demonstrator API. The loop:
 
   1. Queries the grid bounding box once (so we know where nodes can sit).
   2. MONITOR — runs jamming + spoofing detection at a baseline scene.
-  3. ANALYSE — if jamming detected, re-runs with the suspected position
-                to verify localisation; if spoofing detected, examines
-                ΔAoA against the clean-baseline error floor.
-  4. PLAN/EXECUTE — placeholder for the partner's RAN / network action,
+  3. ANALYSE — if jamming detected, examines the GLRT localisation; if
+                spoofing detected, examines ΔAoA against the clean-baseline
+                error floor.
+  4. PLAN/EXECUTE — placeholder for the ZTSO's RAN / network action,
                 then rotates the secret key with /skg/generate.
 
-API base URL — pick one of:
+API base URL — pick one:
 
-  Local Docker:    http://localhost:8000/api/v1
   Live deployment: https://robust6g-demo.etis-lab.fr/api/v1
-                   (during v0.2 rollout the prefix may still be /api/;
-                    consult the README for the current path.)
+  Local Docker:    http://localhost:8000/api/v1
 
-Operating-point presets (must match the GUI's Low/Medium/High):
 
-  Low     snr_db = 20    pj_dbm = 7
-  Medium  snr_db = 25    pj_dbm = 15
-  High    snr_db = 30    pj_dbm = 24
+No credentials are required. The first call to /skg/generate takes
+25-40 s while Polar-CRC reconciliation runs; the script's TIMEOUT
+covers that.
+
+Requires: requests  (pip install requests)
 
 Run:
     python3 closed_loop_example.py
@@ -137,7 +136,7 @@ def analyse_spoofing(spoof):
 # Stage 4 — PLAN & EXECUTE                                                    #
 # --------------------------------------------------------------------------- #
 def execute_mitigation(jam_confirmed, spoof_confirmed):
-    """Placeholder for the partner's own RAN / network actions."""
+    """Placeholder for the ZTSO's own RAN / network actions."""
     actions = []
     if jam_confirmed:
         actions.append("notify_RAN(handover_or_beamsteer)")
@@ -150,7 +149,7 @@ def execute_mitigation(jam_confirmed, spoof_confirmed):
 
 def rotate_key(user_xy, eve_xy):
     """Re-run SKG and commit the new key if quality is sufficient."""
-    print("[execute] rotating secret key (this takes ~30 s)...")
+    print("[execute] rotating secret key (please wait)...")
     skg = call("POST", "/skg/generate", json={
         "user":         {"x": user_xy[0], "y": user_xy[1]},
         "eavesdropper": {"x": eve_xy[0],  "y": eve_xy[1]},
