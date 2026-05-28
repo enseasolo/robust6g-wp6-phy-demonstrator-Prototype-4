@@ -1,13 +1,11 @@
 # ROBUST-6G WP6 PHY Demonstrator — Integration Notes
 
-> **Live preview:** <https://robust6g-demo.etis-lab.fr/> (GUI + API).
-> The live API path prefix is currently `/api/` during the v0.2 rollout;
-> the canonical `/api/v1/` paths in this document are guaranteed inside
-> the Docker container shipped here.
+> **Live deployment:** <https://robust6g-demo.etis-lab.fr/> (GUI + API).
+> The live API serves the canonical `/api/v1/` paths described in this
+> document, e.g. <https://robust6g-demo.etis-lab.fr/api/v1/health>.
+> The Docker container in this repo exposes the same paths locally.
 
 This document accompanies `openapi.yaml` 
-
-
 
 ## 1. What the component does
 
