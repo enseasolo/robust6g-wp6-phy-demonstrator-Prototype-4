@@ -1,14 +1,12 @@
 # ROBUST-6G WP6 — Démonstrateur PHY
 
-> **Aperçu en direct**
+> **Déploiement en direct**
 > · Interface graphique : <https://robust6g-demo.etis-lab.fr/>
-> · Documentation API (Swagger UI) : <https://robust6g-demo.etis-lab.fr/api/docs>
+> · URL de base de l'API : <https://robust6g-demo.etis-lab.fr/api/v1/>
+> · Documentation API (Swagger UI) : <https://robust6g-demo.etis-lab.fr/api/v1/docs>
 >
-> *Remarque : le déploiement en direct est en cours de migration vers la
-> spécification API v0.2 décrite dans ce dépôt. Le chemin des endpoints
-> sur le serveur en direct peut actuellement être `/api/` au lieu de
-> `/api/v1/`. Le conteneur Docker de ce dépôt expose toujours les chemins
-> canoniques `/api/v1/`.*
+> L'API en direct sert les chemins canoniques `/api/v1/` décrits dans ce
+> dépôt. Le conteneur Docker expose les mêmes chemins en local.
 
 Démonstrateur de sécurité à la couche physique pour le projet ROBUST-6G,
 Work Package 6. Fournit trois capacités de détection indépendantes
