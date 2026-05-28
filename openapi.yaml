@@ -1,15 +1,15 @@
 openapi: 3.1.0
 info:
   title: ROBUST-6G WP6 PHY Demonstrator API
-  version: 0.1.0
+  version: 0.2.0
   description: |
     HTTP/JSON interface to the ROBUST-6G Work Package 6 physical-layer
     demonstrator. The component exposes three independent detection
     capabilities operating on a shared 24 × 24 measured-CSI grid:
 
-      * Spatial GLRT + WL-CUSUM jamming detection
-      * Root-MUSIC AoA-based spoofing detection
-      * Polar-CRC reconciliation + Davies-Meyer/AES-128 secret-key generation
+    * Spatial GLRT + WL-CUSUM jamming detection
+    * Root-MUSIC AoA-based spoofing detection
+    * Polar-CRC reconciliation + Davies-Meyer/AES-128 secret-key generation
 
     Each capability is invoked via an idempotent POST that takes a scene
     description (positions of legitimate user, jammer, spoofer, eavesdropper)
@@ -20,13 +20,20 @@ info:
     bounded by /grid (see GET response below); positions outside the
     bounding box are snapped to the nearest dataset measurement point.
 
+    A live preview of the demonstrator (interactive GUI + this API) is
+    hosted at https://robust6g-demo.etis-lab.fr/. Note that the live
+    endpoint URL prefix may differ during the v0.2 rollout; consult the
+    README for the current path.
+
   contact:
     name: ROBUST-6G WP6 — PHY Demonstrator team
-    # email: <fill in>
+    email: solomon.yese@ensea.fr
   license:
     name: To be confirmed (project deliverable)
 
 servers:
+  - url: https://robust6g-demo.etis-lab.fr/api/v1
+    description: Live preview deployment (v0.2 rollout in progress)
   - url: http://{host}:{port}/api/v1
     description: Local container deployment
     variables:
@@ -137,7 +144,6 @@ paths:
         '500': { $ref: '#/components/responses/InternalError' }
 
 components:
-
   responses:
     BadRequest:
       description: Malformed request (missing field, position out of bounds, etc).
@@ -151,20 +157,19 @@ components:
           schema: { $ref: '#/components/schemas/Error' }
 
   schemas:
-
     Health:
       type: object
       required: [status, engines]
       properties:
-        status:    { type: string, enum: [ok, degraded] }
-        version:   { type: string, example: "0.1.0" }
+        status: { type: string, enum: [ok, degraded] }
+        version: { type: string, example: "0.2.0" }
         engines:
           type: object
           properties:
-            jamming_loaded:  { type: boolean }
+            jamming_loaded: { type: boolean }
             spoofing_loaded: { type: boolean }
-            skg_loaded:      { type: boolean }
-            dataset_path:    { type: string, example: "data_ULA_skg.npz" }
+            skg_loaded: { type: boolean }
+            dataset_path: { type: string, example: "data_ULA_skg.npz" }
 
     GridInfo:
       type: object
@@ -175,22 +180,22 @@ components:
           description: Axis-aligned bounding box of the placement region (metres).
           required: [x_min, x_max, y_min, y_max]
           properties:
-            x_min: { type: number, example: -1.5 }
-            x_max: { type: number, example:  1.5 }
-            y_min: { type: number, example:  1.0 }
-            y_max: { type: number, example:  4.0 }
+            x_min: { type: number, example: -1.437 }
+            x_max: { type: number, example: 1.357 }
+            y_min: { type: number, example: 1.155 }
+            y_max: { type: number, example: 4.029 }
         n_dataset_points: { type: integer, example: 576 }
         delta_m:
           type: number
           description: Nominal grid spacing (metres) used by the GLRT path-loss model.
-          example: 0.1215
+          example: 0.115
         ula:
           type: object
           description: Position and size of the receive antenna array.
           properties:
             n_elements: { type: integer, example: 64 }
-            x_m:        { type: number, example: 3.0 }
-            y_m:        { type: array, items: { type: number } }
+            x_m: { type: number, example: 3.3 }
+            y_m: { type: array, items: { type: number } }
 
     Position2D:
       type: object
@@ -204,19 +209,25 @@ components:
       properties:
         snr_db:
           type: number
-          description: Receiver SNR setting in dB. Demonstrator presets are 10 (Low), 20 (Medium), 30 (High).
-          default: 20
+          description: |
+            Receiver SNR setting in dB. Demonstrator presets are
+            20 (Low), 25 (Medium), 30 (High). These match the SNR Level
+            dropdown in the interactive GUI.
+          default: 25
         pj_dbm:
           type: number
-          description: Jammer transmit power in dBm. Demonstrator presets are 7 (Low), 15 (Medium), 25 (High).
+          description: |
+            Jammer transmit power in dBm. Demonstrator presets are
+            7 (Low), 15 (Medium), 24 (High). These match the Jamming
+            Intensity dropdown in the interactive GUI.
           default: 15
 
     JammingRequest:
       type: object
       required: [user]
       properties:
-        user:    { $ref: '#/components/schemas/Position2D' }
-        jammer:  { $ref: '#/components/schemas/Position2D' }
+        user: { $ref: '#/components/schemas/Position2D' }
+        jammer: { $ref: '#/components/schemas/Position2D' }
         operating_point:
           $ref: '#/components/schemas/OperatingPoint'
         n_steps:
@@ -230,20 +241,20 @@ components:
       type: object
       required: [alarm, peak_score, threshold]
       properties:
-        alarm:           { type: boolean, description: "True if jamming was detected at the final step." }
-        spatial_alarm:   { type: boolean }
-        temporal_alarm:  { type: boolean }
-        peak_score:      { type: number, description: "GLRT peak score at the estimated jammer location." }
-        threshold:       { type: number, description: "Bonferroni-corrected GLRT threshold." }
-        cusum_g_t:       { type: number }
+        alarm: { type: boolean, description: "True if jamming was detected at the final step." }
+        spatial_alarm: { type: boolean }
+        temporal_alarm: { type: boolean }
+        peak_score: { type: number, description: "GLRT peak score at the estimated jammer location." }
+        threshold: { type: number, description: "Bonferroni-corrected GLRT threshold." }
+        cusum_g_t: { type: number }
         jammer_estimated:
           allOf:
             - $ref: '#/components/schemas/Position2D'
             - description: "Snapped to nearest grid cell. null if no alarm."
-          nullable: true
-        sinr_user_db:    { type: number }
-        jn_user_db:      { type: number }
-        sinr_drop_db:    { type: number }
+              nullable: true
+        sinr_user_db: { type: number }
+        jn_user_db: { type: number }
+        sinr_drop_db: { type: number }
         confidence:
           type: string
           enum: [None, Low, Medium, High, "Very High"]
@@ -252,9 +263,9 @@ components:
       type: object
       required: [user, spoofer]
       properties:
-        user:    { $ref: '#/components/schemas/Position2D' }
+        user: { $ref: '#/components/schemas/Position2D' }
         spoofer: { $ref: '#/components/schemas/Position2D' }
-        jammer:  { $ref: '#/components/schemas/Position2D' }
+        jammer: { $ref: '#/components/schemas/Position2D' }
         operating_point:
           $ref: '#/components/schemas/OperatingPoint'
 
@@ -265,10 +276,10 @@ components:
         verdict:
           type: string
           enum: [SPOOF_FAIL, SPOOF_SUCCESS, AMBIGUOUS]
-        detected:        { type: boolean, description: "True if spoofing was caught." }
-        delta_aoa_deg:   { type: number, description: "|ΔAoA| between user and spoofer estimates after mitigation." }
-        med_ae_deg:      { type: number, description: "Clean-baseline median AoA error." }
-        mae_deg:         { type: number, description: "Clean-baseline mean AoA error." }
+        detected: { type: boolean, description: "True if spoofing was caught." }
+        delta_aoa_deg: { type: number, description: "|ΔAoA| between user and spoofer estimates after mitigation." }
+        med_ae_deg: { type: number, description: "Clean-baseline median AoA error." }
+        mae_deg: { type: number, description: "Clean-baseline mean AoA error." }
         grid_success_rate_pct:
           type: number
           description: "Fraction of non-ambiguous grid cells where a spoofer would be detected (defender's success rate)."
@@ -277,12 +288,12 @@ components:
       type: object
       required: [user]
       properties:
-        user:        { $ref: '#/components/schemas/Position2D' }
+        user: { $ref: '#/components/schemas/Position2D' }
         eavesdropper:
           allOf:
             - $ref: '#/components/schemas/Position2D'
             - description: "Optional; if omitted, only Alice/Bob reconciliation is run."
-          nullable: true
+              nullable: true
         operating_point:
           $ref: '#/components/schemas/OperatingPoint'
         seed:
@@ -295,16 +306,16 @@ components:
       required: [reconciliation_pct, alice_key_hex, n_recon_bits, alice_bob_match]
       properties:
         reconciliation_pct: { type: number, description: "100 × (1 – error_prob) from the Polar-CRC decoder." }
-        error_prob:         { type: number }
-        n_recon_bits:       { type: integer }
-        alice_key_hex:      { type: string, example: "f9c535d28b874ff0e117e80b5fd592fd" }
-        alice_bob_match:    { type: boolean }
+        error_prob: { type: number }
+        n_recon_bits: { type: integer }
+        alice_key_hex: { type: string, example: "f9c535d28b874ff0e117e80b5fd592fd" }
+        alice_bob_match: { type: boolean }
         eve:
           type: object
           nullable: true
           description: "Present only when an eavesdropper position is provided."
           properties:
-            key_hex:           { type: string }
+            key_hex: { type: string }
             pre_hash_match_pct: { type: number, description: "Bit-match between Eve's quantised CSI and Alice's reconciled bits." }
             post_hash_match_pct: { type: number, description: "Bit-match between Eve's hashed key and Alice's." }
 
@@ -312,6 +323,6 @@ components:
       type: object
       required: [error]
       properties:
-        error:   { type: string, example: "POSITION_OUT_OF_BBOX" }
+        error: { type: string, example: "POSITION_OUT_OF_BBOX" }
         message: { type: string }
-        detail:  { type: object, additionalProperties: true }
+        detail: { type: object, additionalProperties: true }

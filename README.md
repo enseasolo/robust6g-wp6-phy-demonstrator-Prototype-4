@@ -1,21 +1,33 @@
 # ROBUST-6G WP6 — PHY Demonstrator
 
+> **Live preview**
+> · Interactive GUI: <https://robust6g-demo.etis-lab.fr/>
+> · API docs (Swagger UI): <https://robust6g-demo.etis-lab.fr/api/docs>
+>
+> *Note: the live deployment is mid-rollout to the v0.2 API spec described in
+> this repository. The endpoint path on the live server may currently be
+> `/api/` rather than `/api/v1/`. The Docker container in this repo always
+> exposes the canonical `/api/v1/` paths.*
+
 Physical-layer security demonstrator for the ROBUST-6G project, Work
 Package 6. Provides three independent detection capabilities operating on
 a measured-CSI dataset (24 × 24 grid, 64-element ULA, 2.61 GHz):
 
-| Capability                | Method                                           |
-|---------------------------|--------------------------------------------------|
-| Jamming detection         | Spatial GLRT + temporal WL-CUSUM                 |
-| Spoofing detection        | Root-MUSIC AoA + jammer-mitigation calibration   |
-| Secret-key generation     | Polar-CRC reconciliation + Davies-Meyer/AES-128  |
+| Capability            | Method                                          |
+| --------------------- | ----------------------------------------------- |
+| Jamming detection     | Spatial GLRT + temporal WL-CUSUM                |
+| Spoofing detection    | Root-MUSIC AoA + jammer-mitigation calibration  |
+| Secret-key generation | Polar-CRC reconciliation + Davies-Meyer/AES-128 |
 
 This repository ships two front-ends to the same underlying engines:
 
-* **HTTP/JSON API** (`api_server.py`) — for orchestrator / OpenC2 use.
-  Specified by [`openapi.yaml`](./openapi.yaml).
-* **Interactive UI** (`main.py`) — NiceGUI single-page demonstrator
+- **HTTP/JSON API** (`api_server.py`) — for orchestrator / OpenC2 use.
+  Specified by [`openapi.yaml`](openapi.yaml).
+- **Interactive UI** (`main.py`) — NiceGUI single-page demonstrator
   (optional; not required for integration).
+
+A separate Tkinter-based interactive demonstrator is also deployed at the
+live URL above for visual exploration.
 
 ---
 
@@ -33,7 +45,7 @@ Expected output:
 ```json
 {
   "status": "ok",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "engines": {
     "jamming_loaded": true,
     "spoofing_loaded": true,
@@ -51,7 +63,7 @@ warm-up.
 
 ## API
 
-See [`openapi.yaml`](./openapi.yaml) for the full schema. Five endpoints:
+See [`openapi.yaml`](openapi.yaml) for the full schema. Five endpoints:
 
 ```
 GET  /api/v1/health
@@ -62,9 +74,16 @@ POST /api/v1/skg/generate
 ```
 
 Interactive docs (Swagger UI) are served at `http://localhost:8000/docs`
-when the container is running.
+when the container is running, or at
+<https://robust6g-demo.etis-lab.fr/api/docs> on the live deployment.
 
-### Example: jamming detection
+### Operating-point presets
+
+The interactive GUI exposes three SNR / jamming-intensity levels. Use
+the same numeric values in API calls so that GUI and API results are
+comparable.
+
+### Example — jamming detection
 
 ```bash
 curl -s http://localhost:8000/api/v1/jamming/detect \
@@ -72,11 +91,11 @@ curl -s http://localhost:8000/api/v1/jamming/detect \
   -d '{
     "user":   {"x": -0.7, "y": 3.6},
     "jammer": {"x": -0.2, "y": 2.9},
-    "operating_point": {"snr_db": 20, "pj_dbm": 15}
+    "operating_point": {"snr_db": 25, "pj_dbm": 15}
   }' | jq .
 ```
 
-### Example: secret-key generation
+### Example — secret-key generation
 
 ```bash
 curl -s --max-time 90 http://localhost:8000/api/v1/skg/generate \
@@ -84,9 +103,14 @@ curl -s --max-time 90 http://localhost:8000/api/v1/skg/generate \
   -d '{
     "user":         {"x": -0.7, "y": 3.6},
     "eavesdropper": {"x": -1.0, "y": 2.1},
-    "operating_point": {"snr_db": 20}
+    "operating_point": {"snr_db": 25}
   }' | jq .
 ```
+
+### Closed-loop integration
+
+A runnable MAPE-K closed-loop example using all three endpoints is in
+[`examples/closed_loop_example.py`](examples/closed_loop_example.py).
 
 ---
 
@@ -104,8 +128,12 @@ curl -s --max-time 90 http://localhost:8000/api/v1/skg/generate \
 ├── dataset/
 │   └── data_ULA_skg.npz     # CSI dataset (≈ 80 MB, included)
 ├── assets/                  # Logos for the NiceGUI front-end
+├── examples/
+│   └── closed_loop_example.py  # MAPE-K integration example
 ├── openapi.yaml             # OpenAPI 3.1 specification
 ├── INTEGRATION.md           # Integration notes for partners
+├── AUTHORS.md               # Project authors / contributors
+├── CHANGELOG.md             # Version history
 ├── Dockerfile
 ├── docker-compose.yml
 └── requirements.txt
@@ -117,14 +145,14 @@ curl -s --max-time 90 http://localhost:8000/api/v1/skg/generate \
 
 Environment variables (all optional):
 
-| Variable                | Default                                    | Purpose                              |
-|-------------------------|--------------------------------------------|--------------------------------------|
-| `PORT`                  | `8000`                                     | Listen port                          |
-| `LOG_LEVEL`             | `INFO`                                     | `DEBUG` for verbose engine logs      |
-| `ROBUST6G_DATASET`      | `/app/dataset/data_ULA_skg.npz`            | SKG dataset (Alice/Bob CSI)          |
-| `ROBUST6G_AOA_DATASET`  | `/app/data_ULA_all.npz`                    | AoA dataset (jamming + spoofing CSI) |
-| `ROBUST6G_SKG_PKG`      | `/app/skg_robust6G`                        | SKG package directory                |
-| `ROBUST6G_ANT_POS`      | (unset)                                    | Optional antenna geometry override   |
+| Variable               | Default                         | Purpose                              |
+| ---------------------- | ------------------------------- | ------------------------------------ |
+| `PORT`                 | `8000`                          | Listen port                          |
+| `LOG_LEVEL`            | `INFO`                          | `DEBUG` for verbose engine logs      |
+| `ROBUST6G_DATASET`     | `/app/dataset/data_ULA_skg.npz` | SKG dataset (Alice/Bob CSI)          |
+| `ROBUST6G_AOA_DATASET` | `/app/data_ULA_all.npz`         | AoA dataset (jamming + spoofing CSI) |
+| `ROBUST6G_SKG_PKG`     | `/app/skg_robust6G`             | SKG package directory                |
+| `ROBUST6G_ANT_POS`     | (unset)                         | Optional antenna geometry override   |
 
 ---
 
@@ -153,13 +181,44 @@ without serialisation.
 
 ---
 
+## Citation
+
+A description of the methods and the demonstrator will be presented at
+**EuCNC & 6G Summit 2026, Málaga, Spain**. Once published, partners using
+this demonstrator or its methods in their own work are kindly asked to
+cite the corresponding paper. A BibTeX entry will be added here.
+
+```bibtex
+@inproceedings{robust6g_wp6_demo_2026,
+  title     = {ROBUST-6G WP6: Physical-Layer Security Demonstrator
+               for AoA Authentication, Jamming Detection and Secret Key Generation},
+  author    = {Solomon Yese, Arsenia Chorti, Sara Berri,  Luan Chen, Luzzi, Laura,  Linda Senigagliesi, Sotiris Skaperas, Mamady Delamou,
+                 and Passah, Angelo},
+  booktitle = {Proc. EuCNC \& 6G Summit},
+  address   = {M\'alaga, Spain},
+  year      = {2026},
+  note      = {to appear}
+}
+```
+
+---
+
 ## Licence / attribution
 
 Project deliverable for ROBUST-6G WP6. Final licence to be confirmed.
+
+See [AUTHORS.md](AUTHORS.md) for the full list of contributors.
 
 ---
 
 ## Contact
 
-Solomon Yese — ENSEA — <solomon.yese@ensea.fr>
-ROBUST-6G WP6 PHY Demonstrator team
+> **Solomon Yese** — `solomon.yese@ensea.fr`
+> ENSEA / ETIS Laboratory, CY Cergy Paris Université
+
+ROBUST-6G WP6 PHY Demonstrator team.
+
+---
+
+*Une version française de cette documentation est disponible dans
+[`README.fr.md`](README.fr.md).*
