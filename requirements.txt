@@ -11,9 +11,15 @@ scipy>=1.11,<2
 pycryptodome>=3.19,<4
 
 # --- SKG package & polar code dependencies ---
-# sympy is used by polar_gaussian.py; matplotlib by some skg utilities.
+# sympy is used by polar_gaussian.py; matplotlib by some skg utilities;
+# galois provides the GF arithmetic for the polar/BCH reconciliation.
+galois>=0.3,<1
 sympy>=1.12,<2
 matplotlib>=3.7,<4
+
+# --- Examples (examples/closed_loop_example.py) ---
+# Only needed to run the client-side integration example, not the server.
+requests>=2.31,<3
 
 # --- (Optional) NiceGUI for the legacy interactive demonstrator. The API
 # service does not require it — comment out for a leaner image.
