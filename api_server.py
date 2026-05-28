@@ -95,7 +95,7 @@ def _find_antenna_positions() -> str | None:
 ANT_POS_PATH = _find_antenna_positions()
 
 logger = logging.getLogger("robust6g.api")
-logging.basicConfig(level=os.environ.get("LOG_LEVEL", "INFO"))
+logging.basicConfig(level=os.environ.get("LOG_LEVEL", "INFO").upper())
 
 
 # --- Engine container ------------------------------------------------------
